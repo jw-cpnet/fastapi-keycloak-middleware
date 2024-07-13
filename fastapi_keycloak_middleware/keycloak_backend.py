@@ -67,7 +67,9 @@ class KeycloakBackend(AuthenticationBackend):
             user_id=userinfo.get("user_id", ""),
         )
 
-    async def authenticate(self, conn: HTTPConnection) -> tuple[list[str], BaseUser | None]:
+    async def authenticate(
+        self, conn: HTTPConnection
+    ) -> tuple[list[str], BaseUser | None, typing.Callable]:
         """
         The authenticate method is invoked each time a route is called that
         the middleware is applied to.
@@ -172,4 +174,7 @@ class KeycloakBackend(AuthenticationBackend):
             log.warning("User object is None. The user-provided function returned None")
             raise AuthUserError
 
-        return scope_auth, user
+        def permission_validator(permissions):
+            return self.keycloak_openid.has_uma_access(token[1], permissions)
+
+        return scope_auth, user, permission_validator

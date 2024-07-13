@@ -92,8 +92,14 @@ def require_permission(
 
             allowed_scopes = request.get("auth", [])
 
-            # Check if user has permission
-            allowed, matching_permissions = _check_permission(permissions, allowed_scopes)
+            permission_validator = request.get("permission_validator", None)
+
+            if permission_validator:
+                allowed = permission_validator(permissions)
+                matching_permissions = permissions
+            else:
+                # Check if user has permission
+                allowed, matching_permissions = _check_permission(permissions, allowed_scopes)
 
             if allowed:
                 log.info(f"Permission granted for user {str(user)}")

@@ -132,7 +132,7 @@ class KeycloakMiddleware:
 
             log.info("Trying to authenticate user")
 
-            auth, user = await self.backend.authenticate(connection)
+            auth, user, permission_validator = await self.backend.authenticate(connection)
 
             log.debug("User has been authenticated successfully")
 
@@ -141,7 +141,7 @@ class KeycloakMiddleware:
                 log.debug("Calling user provided scope mapper")
                 auth = await self.scope_mapper(auth)
 
-            scope["auth"], scope["user"] = auth, user
+            scope["auth"], scope["user"], scope["permission_validator"] = auth, user, permission_validator
 
         except AuthHeaderMissing:  # Request has no 'Authorization' HTTP Header
             response = JSONResponse(
