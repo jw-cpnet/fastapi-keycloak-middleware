@@ -126,9 +126,15 @@ def setup_keycloak_middleware(  # pylint: disable=too-many-arguments
             if keycloak_configuration.swagger_client_id
             else keycloak_configuration.client_id
         )
+        client_secret = (
+            keycloak_configuration.swagger_client_secret
+            if keycloak_configuration.swagger_client_secret
+            else keycloak_configuration.client_secret
+        )
         scopes = swagger_auth_scopes if swagger_auth_scopes else ["openid", "profile"]
         swagger_ui_init_oauth = {
             "clientId": client_id,
+            "clientSecret": client_secret,
             "scopes": scopes,
             "appName": app.title,
             "usePkceWithAuthorizationCodeGrant": swagger_auth_pkce,
